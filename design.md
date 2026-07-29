@@ -1,7 +1,7 @@
 # 🎨 대학생 창업 성향 테스트 UI/UX 디자인 가이드 (design.md)
 
-> **컨셉 스토어**: "Fresh Sky & Leaf Breeze" (푸르른 하늘과 싱그러운 초록잎사귀)  
-> **핵심 가치**: 단순함(Simplicity), 시원시원함(Spaciousness), 약간의 둥근 곡선(Soft Rounded), 귀여운 미크로 인터랙션(Cute Micro-Interactions)
+> **컨셉 스토어**: "Fresh Sky & Leaf Breeze (Witty & Sleek Glass Edition)" (푸르른 하늘과 싱그러운 초록잎사귀 + 은은한 글래스모피즘)  
+> **핵심 가치**: 시원시원함(Spaciousness), 위트 있는 네이밍(Witty Copywriting), 세련된 글래스모피즘(Glassmorphic Blur), 약간의 둥근 곡선(Soft Rounded), 통통 튀는 바운스(Spring Micro-Interactions)
 
 ---
 
@@ -9,10 +9,11 @@
 
 | 요소 | 컨셉 방향 | 세부 가이드 |
 | :--- | :--- | :--- |
-| **분위기 (Mood)** | 청량함 & 풋풋함 | 대학생 참가자들의 새로운 시작을 응원하는 시원한 하늘과 싱그러운 나뭇잎 느낌 |
-| **레이아웃 (Layout)** | 시원시원한 모바일 퍼스트 | 여백(Padding/Margin)을 넉넉히 주어 답답하지 않고 한눈에 들어오는 가독성 확보 |
-| **모서리 (Radius)** | 부드럽게 둥근 곡선 | 차가운 직각 사각형을 피하고, 14px~20px의 기분 좋은 둥근 모서리 적용 |
-| **귀여움 (Cuteness)** |위트 있는 캐릭터 & 뱃지 | 귀여운 이모지 뱃지, 통통 튀는 바운스 애니메이션, 둥근 포인트 폰트 적용 |
+| **분위기 (Mood)** | 청량함 & 세련된 위트 | 대학생 참가자들의 활력을 북돋우는 푸른 하늘 + 싱그러운 초록잎 + 위트 있는 성향 캐릭터 네이밍 |
+| **글래스모피즘 (Glass)** | 은은한 광택 & 블러 | `backdrop-filter: blur(16px)`와 소프트한 앰비언트 글로우 스팟 배경으로 고급스러운 깊이감 구현 |
+| **모서리 (Radius)** | 기분 좋은 부드러운 곡선 | 차가운 사각형 대신 14px~24px의 둥근 모서리와 알약 형태의 뱃지 레이아웃 |
+| **귀여움 & 위트 (Witty)** | 센스 있는 카피 & 통통 튀는 모션 | "머릿속 팝콘 기계", "팩트 폭격기" 등 재치 있는 카피와 `@keyframes springPop`, `cuteBounce` 모션 |
+
 
 ---
 
