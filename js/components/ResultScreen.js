@@ -23,6 +23,13 @@ export class ResultScreen {
   }
 
   shareKakaoTalk() {
+    // 💡 file:// 로컬 파일로 열었을 경우 예외 안내 (카카오 보안 정책상 http/https 도메인 필수)
+    if (window.location.protocol === 'file:') {
+      alert('💡 카카오톡 공유 기능은 보안 정책상 웹 도메인(Vercel 배포 주소 또는 http://localhost:8080)에서 동작합니다.\n\n결과 링크를 클립보드에 복사해 드립니다! 🎉');
+      this.onShare();
+      return;
+    }
+
     const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || '';
     if (!kakaoKey) {
       alert('카카오 SDK 키가 설정되지 않았습니다. Vercel 환경변수(KAKAO_JS_KEY)를 확인해 주세요.');
@@ -57,18 +64,17 @@ export class ResultScreen {
           ],
         });
       } else {
-        alert('카카오 SDK 연결에 실패했습니다. 네트워크 상태를 확인해 주세요.');
+        alert('카카오 SDK 연결에 실패했습니다.');
       }
     };
 
     if (window.Kakao) {
       doShare();
     } else {
-      // Kakao SDK 동적 자동 로딩
       const script = document.createElement('script');
       script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
       script.onload = () => doShare();
-      script.onerror = () => alert('카카오 SDK 스크립트 로드 실패');
+      script.onerror = () => alert('카카오 SDK 로드 실패');
       document.head.appendChild(script);
     }
   }

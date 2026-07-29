@@ -542,6 +542,12 @@
     }
 
     shareKakaoTalk() {
+      if (window.location.protocol === 'file:') {
+        alert('💡 카카오톡 공유 기능은 보안 정책상 웹 도메인(Vercel 배포 주소 또는 http://localhost:8080)에서만 동작합니다.\n\n결과 링크를 클립보드에 복사해 드립니다! 🎉');
+        this.onShare();
+        return;
+      }
+
       const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || '';
       if (!kakaoKey) {
         alert('카카오 SDK 키가 설정되지 않았습니다. Vercel 환경변수(KAKAO_JS_KEY)를 확인해 주세요.');
