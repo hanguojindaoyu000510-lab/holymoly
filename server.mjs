@@ -18,7 +18,11 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-  let filePath = path.join(__dirname, req.url === '/' ? 'demo.html' : req.url);
+  let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
+  
+  // URL Query String 제거
+  filePath = filePath.split('?')[0];
+
   const extname = String(path.extname(filePath)).toLowerCase();
   const contentType = MIME_TYPES[extname] || 'application/octet-stream';
 
@@ -32,6 +36,12 @@ const server = http.createServer((req, res) => {
         res.end(`Server Error: ${error.code}`, 'utf-8');
       }
     } else {
+      // 🚫 브라우저 캐시 전면 차단 헤더 (항상 최신 파일 응답 보장)
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
+
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(content, 'utf-8');
     }
@@ -39,5 +49,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}/demo.html`);
+  console.log(`Server running at http://localhost:${PORT}/ (No-Cache Mode Active)`);
 });
