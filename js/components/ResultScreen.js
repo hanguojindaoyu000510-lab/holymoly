@@ -26,17 +26,7 @@ export class ResultScreen {
     const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || 'e8a329bf41d2ae9d4ce09c09cb0d596e';
     const targetUrl = 'https://holymoly-orpin.vercel.app';
 
-    // 1. 스마트폰/모바일 환경 원터치 카카오톡 전송 지원
-    if (navigator.share) {
-      navigator.share({
-        title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
-        text: `${this.typeData.summary}\n\n나의 창업 성향 테스트하기 🚀`,
-        url: targetUrl
-      }).catch(() => {});
-      return;
-    }
-
-    // 2. PC 브라우저 Kakao SDK 전송
+    // 윈도우 OS 시스템 공유 창(navigator.share) 우회 -> 카카오톡 전용 SDK 모듈 순수 실행
     const doShare = () => {
       try {
         if (window.Kakao) {

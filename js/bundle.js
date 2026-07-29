@@ -545,17 +545,6 @@
       const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || 'e8a329bf41d2ae9d4ce09c09cb0d596e';
       const targetUrl = 'https://holymoly-orpin.vercel.app';
 
-      // 1. 모바일 원터치 공유 지원
-      if (navigator.share) {
-        navigator.share({
-          title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
-          text: `${this.typeData.summary}\n\n나의 창업 성향 테스트하기 🚀`,
-          url: targetUrl
-        }).catch(() => {});
-        return;
-      }
-
-      // 2. PC 브라우저 Kakao SDK 공유
       const doShare = () => {
         try {
           if (window.Kakao) {
