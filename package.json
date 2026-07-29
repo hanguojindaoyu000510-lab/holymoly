@@ -1,0 +1,13 @@
+{
+  "name": "holymoly-startup-test",
+  "version": "1.0.0",
+  "description": "대학생 창업 성향 테스트 웹사이트",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-config.mjs",
+    "start": "node server.mjs"
+  },
+  "keywords": ["startup", "test", "kakao-share"],
+  "author": "Antigravity",
+  "license": "MIT"
+}

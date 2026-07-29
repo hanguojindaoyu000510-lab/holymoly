@@ -540,6 +540,45 @@
       this.onRestart = onRestart;
       this.onShare = onShare;
     }
+
+    shareKakaoTalk() {
+      const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || '';
+      if (!kakaoKey) {
+        alert('카카오 SDK 키가 설정되지 않았습니다. .env 환경변수를 확인해 주세요.');
+        return;
+      }
+
+      if (window.Kakao) {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init(kakaoKey);
+        }
+
+        window.Kakao.Share.sendDefault({
+          objectType: 'feed',
+          content: {
+            title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
+            description: this.typeData.summary,
+            imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
+            link: {
+              mobileWebUrl: window.location.href,
+              webUrl: window.location.href,
+            },
+          },
+          buttons: [
+            {
+              title: '나도 창업 성향 테스트하기 🚀',
+              link: {
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href,
+              },
+            },
+          ],
+        });
+      } else {
+        alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해 주세요.');
+      }
+    }
+
     render() {
       const container = document.createElement('div');
       container.className = 'result-screen-container animate-fade-in';
@@ -602,8 +641,10 @@
 
       const actionGroup = document.createElement('div');
       actionGroup.style.cssText = 'display: flex; flex-direction: column; gap: 8px; margin-top: 6px;';
-      const shareBtn = new Button({ text: '결과 공유 및 클립보드 복사', variant: 'primary', icon: '🔗', onClick: () => this.onShare() }).render();
+      const kakaoBtn = new Button({ text: '카카오톡으로 공유하기', variant: 'kakao', icon: '💬', onClick: () => this.shareKakaoTalk() }).render();
+      const shareBtn = new Button({ text: '결과 링크 복사하기', variant: 'primary', icon: '🔗', onClick: () => this.onShare() }).render();
       const restartBtn = new Button({ text: '테스트 다시하기', variant: 'outline', icon: '🔄', onClick: () => this.onRestart() }).render();
+      actionGroup.appendChild(kakaoBtn);
       actionGroup.appendChild(shareBtn);
       actionGroup.appendChild(restartBtn);
 

@@ -1,0 +1,14 @@
+# Environment variables (NEVER commit secrets to Git)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dynamically generated environment config
+js/env-config.js
+
+# Dependencies & OS files
+node_modules/
+.DS_Store
+*.log

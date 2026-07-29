@@ -13,7 +13,7 @@ export class ResultScreen {
    * @param {string} props.resultType - 가장 높은 점수의 성향 키 ('idea', 'maker', 'strategy', 'comm', 'analyst', 'doer')
    * @param {string} [props.userName='익명의 창업가'] - 사용자 이름
    * @param {Function} [props.onRestart] - [다시 테스트하기] 클릭 콜백
-   * @param {Function} [props.onShare] - [결과 공유하기] 클릭 콜백
+   * @param {Function} [props.onShare] - [링크 복사하기] 클릭 콜백
    */
   constructor({ resultType, userName = '익명의 창업가', onRestart, onShare }) {
     this.typeData = results[resultType] || results.idea;
@@ -22,14 +22,52 @@ export class ResultScreen {
     this.onShare = onShare;
   }
 
+  shareKakaoTalk() {
+    const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || '';
+    if (!kakaoKey) {
+      alert('카카오 SDK 키가 설정되지 않았습니다. .env 파일을 확인해 주세요.');
+      return;
+    }
+
+    if (window.Kakao) {
+      if (!window.Kakao.isInitialized()) {
+        window.Kakao.init(kakaoKey);
+      }
+
+      window.Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
+          description: this.typeData.summary,
+          imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
+          link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href,
+          },
+        },
+        buttons: [
+          {
+            title: '나도 창업 성향 테스트하기 🚀',
+            link: {
+              mobileWebUrl: window.location.href,
+              webUrl: window.location.href,
+            },
+          },
+        ],
+      });
+    } else {
+      alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해 주세요.');
+    }
+  }
+
   render() {
     const container = document.createElement('div');
     container.className = 'result-screen-container animate-fade-in';
     container.style.cssText = `
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      padding-bottom: 20px;
+      gap: 16px;
+      padding-bottom: 16px;
     `;
 
     const partnerTypeData = results[this.typeData.partner.type] || results.analyst;
@@ -65,12 +103,12 @@ export class ResultScreen {
     strengthsBox.className = 'result-info-box';
     strengthsBox.innerHTML = `
       <div class="result-info-title">💪 핵심 강점 & 파워</div>
-      <ul style="padding-left: 18px; font-size: 14px; color: var(--text-main); line-height: 1.6;">
+      <ul style="padding-left: 18px; font-size: 13px; color: var(--text-main); line-height: 1.5;">
         ${this.typeData.strengths.map(s => `<li>${s}</li>`).join('')}
       </ul>
       ${this.typeData.warnings ? `
-        <div class="result-info-title" style="color: #D97706; margin-top: 8px;">⚠️ 주의할 점</div>
-        <ul style="padding-left: 18px; font-size: 13px; color: var(--text-sub); line-height: 1.5;">
+        <div class="result-info-title" style="color: #D97706; margin-top: 6px;">⚠️ 주의할 점</div>
+        <ul style="padding-left: 18px; font-size: 12px; color: var(--text-sub); line-height: 1.4;">
           ${this.typeData.warnings.map(w => `<li>${w}</li>`).join('')}
         </ul>
       ` : ''}
@@ -82,7 +120,7 @@ export class ResultScreen {
     roleBox.style.cssText = 'background: var(--sky-tint); border: 1px solid rgba(2, 132, 199, 0.25);';
     roleBox.innerHTML = `
       <div class="result-info-title" style="color: var(--sky-main);">🎯 팀 내 추천 역할</div>
-      <div style="font-size: 17px; font-weight: 800; color: var(--text-main);">${this.typeData.role}</div>
+      <div style="font-size: 15px; font-weight: 800; color: var(--text-main);">${this.typeData.role}</div>
     `;
 
     // 4. 🤝 환상의 파트너 궁합 카드
@@ -91,21 +129,28 @@ export class ResultScreen {
     partnerBox.style.cssText = 'background: var(--leaf-light); border: 1px solid rgba(16, 185, 129, 0.3);';
     partnerBox.innerHTML = `
       <div class="result-info-title" style="color: var(--leaf-main);">🤝 환상의 팀원 파트너 궁합</div>
-      <div style="display: flex; align-items: center; gap: 12px; margin-top: 6px;">
-        <span style="font-size: 36px;">${partnerTypeData.emoji}</span>
+      <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+        <span style="font-size: 32px;">${partnerTypeData.emoji}</span>
         <div>
-          <div style="font-size: 15px; font-weight: 800; color: var(--text-main);">${this.typeData.partner.name}</div>
-          <div style="font-size: 13px; color: var(--text-sub); margin-top: 2px;">${this.typeData.partner.desc}</div>
+          <div style="font-size: 14px; font-weight: 800; color: var(--text-main);">${this.typeData.partner.name}</div>
+          <div style="font-size: 12px; color: var(--text-sub); margin-top: 2px;">${this.typeData.partner.desc}</div>
         </div>
       </div>
     `;
 
-    // 5. 하단 액션 버튼 그룹 (공유하기 & 다시하기)
+    // 5. 하단 액션 버튼 그룹 (카카오톡 공유 & 링크 복사 & 다시하기)
     const actionGroup = document.createElement('div');
-    actionGroup.style.cssText = 'display: flex; flex-direction: column; gap: 10px; margin-top: 10px;';
+    actionGroup.style.cssText = 'display: flex; flex-direction: column; gap: 8px; margin-top: 6px;';
+
+    const kakaoBtn = new Button({
+      text: '카카오톡으로 공유하기',
+      variant: 'kakao',
+      icon: '💬',
+      onClick: () => this.shareKakaoTalk()
+    }).render();
 
     const shareBtn = new Button({
-      text: '결과 공유 및 클립보드 복사',
+      text: '결과 링크 복사하기',
       variant: 'primary',
       icon: '🔗',
       onClick: () => this.onShare()
@@ -118,6 +163,7 @@ export class ResultScreen {
       onClick: () => this.onRestart()
     }).render();
 
+    actionGroup.appendChild(kakaoBtn);
     actionGroup.appendChild(shareBtn);
     actionGroup.appendChild(restartBtn);
 

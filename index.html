@@ -14,6 +14,9 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/components.css">
+
+  <!-- Kakao JavaScript SDK -->
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiGlAcgYsFqahN28rsCeFiXt74iGg4VA4604wB7jTXrS4g54C164R5A9d" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -25,7 +28,10 @@
     <div id="modal-root"></div>
   </div>
 
-  <!-- Standalone App Script (file:// & http:// All Environment Support) -->
+  <!-- Dynamic Environment Config (Generated at build time, ignored in git) -->
+  <script src="js/env-config.js"></script>
+
+  <!-- Standalone App Script -->
   <script src="js/bundle.js"></script>
 </body>
 </html>
