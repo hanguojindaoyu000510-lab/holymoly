@@ -24,18 +24,9 @@ export class ResultScreen {
 
   shareKakaoTalk() {
     const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || 'e8a329bf41d2ae9d4ce09c09cb0d596e';
-    const targetUrl = window.location.protocol.startsWith('http') 
-      ? window.location.href 
-      : 'https://holymoly-orpin.vercel.app';
+    // 등록된 배포 주소를 기본 타겟으로 설정하여 Error 4002 원천 차단
+    const targetUrl = 'https://holymoly-orpin.vercel.app';
 
-    // 1. file:// 로컬 파일 환경인 경우: Direct Kakao Web Sharer 팝업으로 100% 호환 전송
-    if (window.location.protocol === 'file:') {
-      const sharerUrl = `https://sharer.kakao.com/picker/link?app_key=${kakaoKey}&url=${encodeURIComponent(targetUrl)}`;
-      window.open(sharerUrl, 'kakao_sharer', 'width=450,height=650,location=no,status=no,scrollbars=yes');
-      return;
-    }
-
-    // 2. http/https 웹 도메인 환경인 경우: Kakao.Share.sendDefault 피드 템플릿 전송
     const doShare = () => {
       if (window.Kakao) {
         if (!window.Kakao.isInitialized()) {
@@ -64,8 +55,10 @@ export class ResultScreen {
           ],
         });
       } else {
-        const sharerUrl = `https://sharer.kakao.com/picker/link?app_key=${kakaoKey}&url=${encodeURIComponent(targetUrl)}`;
-        window.open(sharerUrl, 'kakao_sharer', 'width=450,height=650');
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(targetUrl);
+          alert('카카오 SDK 연결 지연으로 결과 링크가 클립보드에 복사되었습니다! 🎉\n\n' + targetUrl);
+        }
       }
     };
 
@@ -76,8 +69,10 @@ export class ResultScreen {
       script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
       script.onload = () => doShare();
       script.onerror = () => {
-        const sharerUrl = `https://sharer.kakao.com/picker/link?app_key=${kakaoKey}&url=${encodeURIComponent(targetUrl)}`;
-        window.open(sharerUrl, 'kakao_sharer', 'width=450,height=650');
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(targetUrl);
+          alert('결과 링크가 클립보드에 복사되었습니다! 🎉\n\n' + targetUrl);
+        }
       };
       document.head.appendChild(script);
     }
