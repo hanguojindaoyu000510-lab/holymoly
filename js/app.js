@@ -7,6 +7,7 @@ import { questions } from './data/questions.js';
 import { Header } from './components/Header.js';
 import { StartScreen } from './components/StartScreen.js';
 import { TestScreen } from './components/TestScreen.js';
+import { LoadingScreen } from './components/LoadingScreen.js';
 import { ResultCard } from './components/ResultCard.js';
 import { Modal } from './components/Modal.js';
 
@@ -47,7 +48,12 @@ class App {
 
     // 메인 콘텐츠 뷰 렌더링
     this.contentRoot.innerHTML = '';
-    this.progressRoot.innerHTML = ''; // Progress는 TestScreen 내부에 통합하여 세련되게 렌더링
+    this.progressRoot.innerHTML = '';
+
+    if (this.currentLoadingComp) {
+      this.currentLoadingComp.destroy();
+      this.currentLoadingComp = null;
+    }
 
     switch (this.state) {
       case 'home':
@@ -113,6 +119,7 @@ class App {
       this.currentIndex++;
       this.render();
     } else {
+      // 모든 질문 응답 완료 시 -> 3. 로딩 화면으로 전환
       this.state = 'loading';
       this.render();
       setTimeout(() => {
@@ -134,32 +141,12 @@ class App {
   }
 
   renderLoadingView() {
-    const container = document.createElement('div');
-    container.className = 'animate-fade-in text-center';
-    container.style.cssText = `
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      gap: 20px;
-      padding-top: 40px;
-    `;
+    // LoadingScreen 모듈 컴포넌트를 사용하여 3. 분석 및 로딩 화면 렌더링
+    this.currentLoadingComp = new LoadingScreen({
+      userName: this.userData.name
+    });
 
-    container.innerHTML = `
-      <div class="result-avatar-circle animate-cute-bounce animate-glow-pulse" style="width: 110px; height: 110px; font-size: 56px;">
-        🔮
-      </div>
-      <h2 style="font-size: 23px; font-weight: 800; color: var(--text-main);">
-        ${this.userData.name} 님의 성향을<br>
-        <span style="color: var(--leaf-main);">분석하고 있습니다...</span>
-      </h2>
-      <p style="font-size: 14px; color: var(--text-sub);">
-        최고의 🤝 환상의 파트너 조합을 계산하는 중입니다!
-      </p>
-    `;
-
-    this.contentRoot.appendChild(container);
+    this.contentRoot.appendChild(this.currentLoadingComp.render());
   }
 
   getWinnerType() {
