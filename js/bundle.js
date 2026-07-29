@@ -542,18 +542,19 @@
     }
 
     shareKakaoTalk() {
+      const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || 'e8a329bf41d2ae9d4ce09c09cb0d596e';
+      const targetUrl = window.location.protocol.startsWith('http') 
+        ? window.location.href 
+        : 'https://holymoly-orpin.vercel.app';
+
+      // 1. file:// 로컬 파일 환경인 경우: Direct Kakao Web Sharer 팝업으로 100% 호환 전송
       if (window.location.protocol === 'file:') {
-        alert('💡 카카오톡 공유 기능은 보안 정책상 웹 도메인(Vercel 배포 주소 또는 http://localhost:8080)에서만 동작합니다.\n\n결과 링크를 클립보드에 복사해 드립니다! 🎉');
-        this.onShare();
+        const sharerUrl = `https://sharer.kakao.com/picker/link?app_key=${kakaoKey}&url=${encodeURIComponent(targetUrl)}`;
+        window.open(sharerUrl, 'kakao_sharer', 'width=450,height=650,location=no,status=no,scrollbars=yes');
         return;
       }
 
-      const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || '';
-      if (!kakaoKey) {
-        alert('카카오 SDK 키가 설정되지 않았습니다. Vercel 환경변수(KAKAO_JS_KEY)를 확인해 주세요.');
-        return;
-      }
-
+      // 2. http/https 웹 도메인 환경인 경우: Kakao.Share.sendDefault 피드 템플릿 전송
       const doShare = () => {
         if (window.Kakao) {
           if (!window.Kakao.isInitialized()) {
@@ -567,22 +568,23 @@
               description: this.typeData.summary,
               imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
               link: {
-                mobileWebUrl: window.location.href,
-                webUrl: window.location.href,
+                mobileWebUrl: targetUrl,
+                webUrl: targetUrl,
               },
             },
             buttons: [
               {
                 title: '나도 창업 성향 테스트하기 🚀',
                 link: {
-                  mobileWebUrl: window.location.href,
-                  webUrl: window.location.href,
+                  mobileWebUrl: targetUrl,
+                  webUrl: targetUrl,
                 },
               },
             ],
           });
         } else {
-          alert('카카오 SDK 연결에 실패했습니다.');
+          const sharerUrl = `https://sharer.kakao.com/picker/link?app_key=${kakaoKey}&url=${encodeURIComponent(targetUrl)}`;
+          window.open(sharerUrl, 'kakao_sharer', 'width=450,height=650');
         }
       };
 
@@ -592,7 +594,10 @@
         const script = document.createElement('script');
         script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
         script.onload = () => doShare();
-        script.onerror = () => alert('카카오 SDK 로드 실패');
+        script.onerror = () => {
+          const sharerUrl = `https://sharer.kakao.com/picker/link?app_key=${kakaoKey}&url=${encodeURIComponent(targetUrl)}`;
+          window.open(sharerUrl, 'kakao_sharer', 'width=450,height=650');
+        };
         document.head.appendChild(script);
       }
     }
