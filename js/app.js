@@ -8,7 +8,7 @@ import { Header } from './components/Header.js';
 import { StartScreen } from './components/StartScreen.js';
 import { TestScreen } from './components/TestScreen.js';
 import { LoadingScreen } from './components/LoadingScreen.js';
-import { ResultCard } from './components/ResultCard.js';
+import { ResultScreen } from './components/ResultScreen.js';
 import { Modal } from './components/Modal.js';
 
 class App {
@@ -83,7 +83,7 @@ class App {
   }
 
   renderHomeView() {
-    // StartScreen 모듈 컴포넌트를 사용하여 시작 화면 렌더링
+    // StartScreen 모듈 컴포넌트를 사용하여 1. 시작 화면 렌더링
     const startScreen = new StartScreen({
       onStart: () => this.modal.open()
     }).render();
@@ -119,7 +119,7 @@ class App {
       this.currentIndex++;
       this.render();
     } else {
-      // 모든 질문 응답 완료 시 -> 3. 로딩 화면으로 전환
+      // 12개 질문 응답 완료 시 -> 3. 로딩 화면으로 전환 후 2초 뒤 4. 결과 화면 전환
       this.state = 'loading';
       this.render();
       setTimeout(() => {
@@ -163,7 +163,9 @@ class App {
 
   renderResultView() {
     const winnerType = this.getWinnerType();
-    const resultCard = new ResultCard({
+
+    // ResultScreen 모듈 컴포넌트를 사용하여 4. 최종 성향 결과 화면 렌더링
+    const resultScreen = new ResultScreen({
       resultType: winnerType,
       userName: this.userData.name,
       onRestart: () => {
@@ -184,7 +186,7 @@ class App {
       }
     }).render();
 
-    this.contentRoot.appendChild(resultCard);
+    this.contentRoot.appendChild(resultScreen);
   }
 }
 

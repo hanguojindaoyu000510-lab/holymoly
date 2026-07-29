@@ -5,12 +5,12 @@
 import { StartScreen } from './components/StartScreen.js';
 import { TestScreen } from './components/TestScreen.js';
 import { LoadingScreen } from './components/LoadingScreen.js';
+import { ResultScreen } from './components/ResultScreen.js';
 import { Header } from './components/Header.js';
 import { Badge } from './components/Badge.js';
 import { Button } from './components/Button.js';
 import { ProgressBar } from './components/ProgressBar.js';
 import { QuestionCard } from './components/QuestionCard.js';
-import { ResultCard } from './components/ResultCard.js';
 import { Modal } from './components/Modal.js';
 import { questions } from './data/questions.js';
 
@@ -39,13 +39,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }).render();
   loadingScreenRoot.appendChild(loadingScreen);
 
-  // 4. Header Demos
+  // 4. ResultScreen Demo
+  const resultScreenRoot = document.getElementById('result-screen-demo');
+  const resultScreen = new ResultScreen({
+    resultType: 'idea',
+    userName: '김창업',
+    onRestart: () => alert('[ResultScreen 데모] 다시하기 클릭!'),
+    onShare: () => alert('[ResultScreen 데모] 공유하기 클릭!')
+  }).render();
+  resultScreenRoot.appendChild(resultScreen);
+
+  // 5. Header Demos
   const header1 = new Header({ title: '창업 성향 테스트 (기본)', showBack: false }).render();
   const header2 = new Header({ title: '질문 진행 중 (이전 버튼)', showBack: true, onBack: () => alert('이전 클릭!') }).render();
   document.getElementById('header-demo-1').appendChild(header1);
   document.getElementById('header-demo-2').appendChild(header2);
 
-  // 5. Badge Demos
+  // 6. Badge Demos
   const badgeRoot = document.getElementById('badge-demo');
   const badge1 = new Badge({ text: '2026 대학생 창업캠프', icon: '🌱', variant: 'leaf' }).render();
   const badge2 = new Badge({ text: 'Q6. 문제 해결', icon: '💡', variant: 'sky' }).render();
@@ -56,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   badgeRoot.appendChild(badge3);
   badgeRoot.appendChild(badge4);
 
-  // 6. Button Demos
+  // 7. Button Demos
   const btnRoot = document.getElementById('button-demo');
   const btnPrimary = new Button({ text: 'Primary Sky Button', variant: 'primary', icon: '✨', onClick: () => alert('Primary Click!') }).render();
   const btnLeaf = new Button({ text: 'Accent Leaf Button', variant: 'leaf', icon: '🌿', onClick: () => alert('Leaf Click!') }).render();
@@ -65,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
   btnRoot.appendChild(btnLeaf);
   btnRoot.appendChild(btnOutline);
 
-  // 7. ProgressBar Demos
+  // 8. ProgressBar Demos
   const progressRoot = document.getElementById('progress-demo');
   const pb1 = new ProgressBar({ current: 3, total: 12 }).render();
   const pb2 = new ProgressBar({ current: 6, total: 12 }).render();
@@ -74,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
   progressRoot.appendChild(pb2);
   progressRoot.appendChild(pb3);
 
-  // 8. QuestionCard Demo
+  // 9. QuestionCard Demo
   const questionRoot = document.getElementById('question-demo');
   const sampleQ = questions[0];
   const qCard = new QuestionCard({
@@ -82,16 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     onSelect: (type) => alert(`[데모] 선택된 성향 가산점: ${type}`)
   }).render();
   questionRoot.appendChild(qCard);
-
-  // 9. ResultCard Demo
-  const resultRoot = document.getElementById('result-demo');
-  const rCard = new ResultCard({
-    resultType: 'idea',
-    userName: '김창업',
-    onRestart: () => alert('[데모] 다시하기 클릭!'),
-    onShare: () => alert('[데모] 공유하기 클릭!')
-  }).render();
-  resultRoot.appendChild(rCard);
 
   // 10. Modal Demo
   const modalRoot = document.getElementById('modal-root');
