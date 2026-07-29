@@ -24,42 +24,53 @@ export class ResultScreen {
 
   shareKakaoTalk() {
     const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || 'e8a329bf41d2ae9d4ce09c09cb0d596e';
-    // 등록된 배포 주소를 기본 타겟으로 설정하여 Error 4002 원천 차단
     const targetUrl = 'https://holymoly-orpin.vercel.app';
 
-    const doShare = () => {
-      if (window.Kakao) {
-        if (!window.Kakao.isInitialized()) {
-          window.Kakao.init(kakaoKey);
-        }
+    // 1. 스마트폰/모바일 환경 원터치 카카오톡 전송 지원
+    if (navigator.share) {
+      navigator.share({
+        title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
+        text: `${this.typeData.summary}\n\n나의 창업 성향 테스트하기 🚀`,
+        url: targetUrl
+      }).catch(() => {});
+      return;
+    }
 
-        window.Kakao.Share.sendDefault({
-          objectType: 'feed',
-          content: {
-            title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
-            description: this.typeData.summary,
-            imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
-            link: {
-              mobileWebUrl: targetUrl,
-              webUrl: targetUrl,
-            },
-          },
-          buttons: [
-            {
-              title: '나도 창업 성향 테스트하기 🚀',
+    // 2. PC 브라우저 Kakao SDK 전송
+    const doShare = () => {
+      try {
+        if (window.Kakao) {
+          if (!window.Kakao.isInitialized()) {
+            window.Kakao.init(kakaoKey);
+          }
+
+          window.Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+              title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
+              description: this.typeData.summary,
+              imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
               link: {
                 mobileWebUrl: targetUrl,
                 webUrl: targetUrl,
               },
             },
-          ],
-        });
-      } else {
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(targetUrl);
-          alert('카카오 SDK 연결 지연으로 결과 링크가 클립보드에 복사되었습니다! 🎉\n\n' + targetUrl);
+            buttons: [
+              {
+                title: '나도 창업 성향 테스트하기 🚀',
+                link: {
+                  mobileWebUrl: targetUrl,
+                  webUrl: targetUrl,
+                },
+              },
+            ],
+          });
+          return;
         }
+      } catch (e) {
+        console.warn('Kakao Share Fallback:', e);
       }
+      this.onShare();
     };
 
     if (window.Kakao) {
@@ -68,12 +79,7 @@ export class ResultScreen {
       const script = document.createElement('script');
       script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
       script.onload = () => doShare();
-      script.onerror = () => {
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(targetUrl);
-          alert('결과 링크가 클립보드에 복사되었습니다! 🎉\n\n' + targetUrl);
-        }
-      };
+      script.onerror = () => this.onShare();
       document.head.appendChild(script);
     }
   }
