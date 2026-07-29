@@ -3,6 +3,7 @@
  */
 
 import { StartScreen } from './components/StartScreen.js';
+import { TestScreen } from './components/TestScreen.js';
 import { Header } from './components/Header.js';
 import { Badge } from './components/Badge.js';
 import { Button } from './components/Button.js';
@@ -20,13 +21,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }).render();
   startScreenRoot.appendChild(startScreen);
 
-  // 2. Header Demos
+  // 2. TestScreen Demo
+  const testScreenRoot = document.getElementById('test-screen-demo');
+  const testScreen = new TestScreen({
+    questions,
+    currentIndex: 2, // Q3 샘플
+    onSelectOption: (type) => alert(`[TestScreen 데모] 선택된 가산점: ${type}`),
+    onBack: () => alert('[TestScreen 데모] 이전 버튼 클릭!')
+  }).render();
+  testScreenRoot.appendChild(testScreen);
+
+  // 3. Header Demos
   const header1 = new Header({ title: '창업 성향 테스트 (기본)', showBack: false }).render();
   const header2 = new Header({ title: '질문 진행 중 (이전 버튼)', showBack: true, onBack: () => alert('이전 클릭!') }).render();
   document.getElementById('header-demo-1').appendChild(header1);
   document.getElementById('header-demo-2').appendChild(header2);
 
-  // 3. Badge Demos
+  // 4. Badge Demos
   const badgeRoot = document.getElementById('badge-demo');
   const badge1 = new Badge({ text: '2026 대학생 창업캠프', icon: '🌱', variant: 'leaf' }).render();
   const badge2 = new Badge({ text: 'Q6. 문제 해결', icon: '💡', variant: 'sky' }).render();
@@ -37,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
   badgeRoot.appendChild(badge3);
   badgeRoot.appendChild(badge4);
 
-  // 4. Button Demos
+  // 5. Button Demos
   const btnRoot = document.getElementById('button-demo');
   const btnPrimary = new Button({ text: 'Primary Sky Button', variant: 'primary', icon: '✨', onClick: () => alert('Primary Click!') }).render();
   const btnLeaf = new Button({ text: 'Accent Leaf Button', variant: 'leaf', icon: '🌿', onClick: () => alert('Leaf Click!') }).render();
@@ -46,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
   btnRoot.appendChild(btnLeaf);
   btnRoot.appendChild(btnOutline);
 
-  // 5. ProgressBar Demos
+  // 6. ProgressBar Demos
   const progressRoot = document.getElementById('progress-demo');
   const pb1 = new ProgressBar({ current: 3, total: 12 }).render();
   const pb2 = new ProgressBar({ current: 6, total: 12 }).render();
@@ -55,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
   progressRoot.appendChild(pb2);
   progressRoot.appendChild(pb3);
 
-  // 6. QuestionCard Demo
+  // 7. QuestionCard Demo
   const questionRoot = document.getElementById('question-demo');
   const sampleQ = questions[0];
   const qCard = new QuestionCard({
@@ -64,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }).render();
   questionRoot.appendChild(qCard);
 
-  // 7. ResultCard Demo
+  // 8. ResultCard Demo
   const resultRoot = document.getElementById('result-demo');
   const rCard = new ResultCard({
     resultType: 'idea',
@@ -74,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }).render();
   resultRoot.appendChild(rCard);
 
-  // 8. Modal Demo
+  // 9. Modal Demo
   const modalRoot = document.getElementById('modal-root');
   const modal = new Modal({
     onSubmit: (data) => alert(`[데모 입력 완료] 이름: ${data.name}, 소속: ${data.univ}`)

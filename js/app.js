@@ -5,9 +5,8 @@
 
 import { questions } from './data/questions.js';
 import { Header } from './components/Header.js';
-import { ProgressBar } from './components/ProgressBar.js';
 import { StartScreen } from './components/StartScreen.js';
-import { QuestionCard } from './components/QuestionCard.js';
+import { TestScreen } from './components/TestScreen.js';
 import { ResultCard } from './components/ResultCard.js';
 import { Modal } from './components/Modal.js';
 
@@ -32,7 +31,7 @@ class App {
   }
 
   initComponents() {
-    // 1. 정보 입력 모달
+    // 1. 정보 입력 수집 모달
     this.modal = new Modal({
       onSubmit: (user) => {
         this.userData = user;
@@ -43,12 +42,12 @@ class App {
   }
 
   render() {
-    // 헤더 및 프로그레스바 상태 동기화
+    // 헤더 상태 동기화
     this.renderHeader();
-    this.renderProgress();
 
     // 메인 콘텐츠 뷰 렌더링
     this.contentRoot.innerHTML = '';
+    this.progressRoot.innerHTML = ''; // Progress는 TestScreen 내부에 통합하여 세련되게 렌더링
 
     switch (this.state) {
       case 'home':
@@ -77,17 +76,6 @@ class App {
     this.headerRoot.appendChild(header);
   }
 
-  renderProgress() {
-    this.progressRoot.innerHTML = '';
-    if (this.state === 'test') {
-      const progressBar = new ProgressBar({
-        current: this.currentIndex + 1,
-        total: questions.length
-      }).render();
-      this.progressRoot.appendChild(progressBar);
-    }
-  }
-
   renderHomeView() {
     // StartScreen 모듈 컴포넌트를 사용하여 시작 화면 렌더링
     const startScreen = new StartScreen({
@@ -103,6 +91,18 @@ class App {
     this.scores = { idea: 0, maker: 0, strategy: 0, comm: 0, analyst: 0, doer: 0 };
     this.history = [];
     this.render();
+  }
+
+  renderTestView() {
+    // TestScreen 모듈 컴포넌트를 사용하여 2. 테스트 진행 화면 렌더링
+    const testScreen = new TestScreen({
+      questions,
+      currentIndex: this.currentIndex,
+      onSelectOption: (type) => this.handleSelect(type),
+      onBack: () => this.handleBack()
+    }).render();
+
+    this.contentRoot.appendChild(testScreen);
   }
 
   handleSelect(type) {
@@ -133,36 +133,29 @@ class App {
     }
   }
 
-  renderTestView() {
-    const qData = questions[this.currentIndex];
-    const qCard = new QuestionCard({
-      questionData: qData,
-      onSelect: (type) => this.handleSelect(type)
-    }).render();
-
-    this.contentRoot.appendChild(qCard);
-  }
-
   renderLoadingView() {
     const container = document.createElement('div');
     container.className = 'animate-fade-in text-center';
-    container.style.display = 'flex';
-    container.style.flexDirection = 'column';
-    container.style.alignItems = 'center';
-    container.style.justifyContent = 'center';
-    container.style.height = '100%';
-    container.style.gap = '20px';
+    container.style.cssText = `
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 20px;
+      padding-top: 40px;
+    `;
 
     container.innerHTML = `
-      <div class="result-avatar-circle animate-cute-bounce" style="width: 100px; height: 100px; font-size: 50px;">
+      <div class="result-avatar-circle animate-cute-bounce animate-glow-pulse" style="width: 110px; height: 110px; font-size: 56px;">
         🔮
       </div>
-      <h2 style="font-size: 22px; font-weight: 800; color: var(--text-main);">
+      <h2 style="font-size: 23px; font-weight: 800; color: var(--text-main);">
         ${this.userData.name} 님의 성향을<br>
         <span style="color: var(--leaf-main);">분석하고 있습니다...</span>
       </h2>
       <p style="font-size: 14px; color: var(--text-sub);">
-        최고의 환상의 파트너 조합을 계산하는 중입니다!
+        최고의 🤝 환상의 파트너 조합을 계산하는 중입니다!
       </p>
     `;
 
