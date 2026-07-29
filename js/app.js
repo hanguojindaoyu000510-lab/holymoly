@@ -1,0 +1,253 @@
+/**
+ * Application Core Engine (js/app.js)
+ * State Management & Component Orchestrator
+ */
+
+import { questions } from './data/questions.js';
+import { Header } from './components/Header.js';
+import { Badge } from './components/Badge.js';
+import { Button } from './components/Button.js';
+import { ProgressBar } from './components/ProgressBar.js';
+import { QuestionCard } from './components/QuestionCard.js';
+import { ResultCard } from './components/ResultCard.js';
+import { Modal } from './components/Modal.js';
+
+class App {
+  constructor() {
+    this.state = 'home'; // 'home' | 'test' | 'loading' | 'result'
+    this.currentIndex = 0;
+    this.scores = { idea: 0, maker: 0, strategy: 0, comm: 0, analyst: 0, doer: 0 };
+    this.userData = { name: '익명의 창업가', univ: '창업캠프' };
+    this.history = []; // 이전 답변 복귀용 스택
+
+    this.initDOM();
+    this.initComponents();
+    this.render();
+  }
+
+  initDOM() {
+    this.headerRoot = document.getElementById('header-root');
+    this.progressRoot = document.getElementById('progress-root');
+    this.contentRoot = document.getElementById('content-root');
+    this.modalRoot = document.getElementById('modal-root');
+  }
+
+  initComponents() {
+    // 1. 정보 입력 모달
+    this.modal = new Modal({
+      onSubmit: (user) => {
+        this.userData = user;
+        this.startTest();
+      }
+    });
+    this.modalRoot.appendChild(this.modal.render());
+  }
+
+  render() {
+    // 헤더 및 프로그레스바 상태 동기화
+    this.renderHeader();
+    this.renderProgress();
+
+    // 메인 콘텐츠 뷰 렌더링
+    this.contentRoot.innerHTML = '';
+
+    switch (this.state) {
+      case 'home':
+        this.renderHomeView();
+        break;
+      case 'test':
+        this.renderTestView();
+        break;
+      case 'loading':
+        this.renderLoadingView();
+        break;
+      case 'result':
+        this.renderResultView();
+        break;
+    }
+  }
+
+  renderHeader() {
+    this.headerRoot.innerHTML = '';
+    const showBack = this.state === 'test' && this.currentIndex > 0;
+    const header = new Header({
+      title: '창업 성향 테스트',
+      showBack,
+      onBack: () => this.handleBack()
+    }).render();
+    this.headerRoot.appendChild(header);
+  }
+
+  renderProgress() {
+    this.progressRoot.innerHTML = '';
+    if (this.state === 'test') {
+      const progressBar = new ProgressBar({
+        current: this.currentIndex + 1,
+        total: questions.length
+      }).render();
+      this.progressRoot.appendChild(progressBar);
+    }
+  }
+
+  renderHomeView() {
+    const container = document.createElement('div');
+    container.className = 'animate-fade-in text-center';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.gap = '20px';
+    container.style.marginTop = '20px';
+
+    const badge = new Badge({ text: '✨ 2026 대학생 창업 캠프 전용', icon: '🌱', variant: 'leaf' }).render();
+
+    const avatar = document.createElement('div');
+    avatar.className = 'result-avatar-circle animate-cute-bounce';
+    avatar.style.width = '120px';
+    avatar.style.height = '120px';
+    avatar.style.fontSize = '64px';
+    avatar.style.margin = '10px 0';
+    avatar.innerHTML = '🚀';
+
+    const title = document.createElement('h1');
+    title.style.fontSize = '26px';
+    title.style.fontWeight = '800';
+    title.style.lineHeight = '1.35';
+    title.innerHTML = '나는 창업 팀에서<br><span style="color: var(--sky-main);">어떤 역할을 맡아야 할까?</span>';
+
+    const desc = document.createElement('p');
+    desc.style.fontSize = '15px';
+    desc.style.color = 'var(--text-sub)';
+    desc.style.lineHeight = '1.6';
+    desc.innerHTML = '약 3분 만에 확인하는 나의 창업가적 성향!<br>나와 가장 잘 맞는 <b>환상의 팀원 짝꿍</b>을 찾아보세요.';
+
+    const startBtn = new Button({
+      text: '나의 창업 성향 진단하기',
+      variant: 'primary',
+      icon: '✨',
+      onClick: () => this.modal.open()
+    }).render();
+
+    container.appendChild(badge);
+    container.appendChild(avatar);
+    container.appendChild(title);
+    container.appendChild(desc);
+    container.appendChild(startBtn);
+
+    this.contentRoot.appendChild(container);
+  }
+
+  startTest() {
+    this.state = 'test';
+    this.currentIndex = 0;
+    this.scores = { idea: 0, maker: 0, strategy: 0, comm: 0, analyst: 0, doer: 0 };
+    this.history = [];
+    this.render();
+  }
+
+  handleSelect(type) {
+    this.scores[type] = (this.scores[type] || 0) + 1;
+    this.history.push(type);
+
+    if (this.currentIndex < questions.length - 1) {
+      this.currentIndex++;
+      this.render();
+    } else {
+      this.state = 'loading';
+      this.render();
+      setTimeout(() => {
+        this.state = 'result';
+        this.render();
+      }, 2000);
+    }
+  }
+
+  handleBack() {
+    if (this.currentIndex > 0) {
+      const prevType = this.history.pop();
+      if (prevType && this.scores[prevType] > 0) {
+        this.scores[prevType]--;
+      }
+      this.currentIndex--;
+      this.render();
+    }
+  }
+
+  renderTestView() {
+    const qData = questions[this.currentIndex];
+    const qCard = new QuestionCard({
+      questionData: qData,
+      onSelect: (type) => this.handleSelect(type)
+    }).render();
+
+    this.contentRoot.appendChild(qCard);
+  }
+
+  renderLoadingView() {
+    const container = document.createElement('div');
+    container.className = 'animate-fade-in text-center';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.height = '100%';
+    container.style.gap = '20px';
+
+    container.innerHTML = `
+      <div class="result-avatar-circle animate-cute-bounce" style="width: 100px; height: 100px; font-size: 50px;">
+        🔮
+      </div>
+      <h2 style="font-size: 22px; font-weight: 800; color: var(--text-main);">
+        ${this.userData.name} 님의 성향을<br>
+        <span style="color: var(--leaf-main);">분석하고 있습니다...</span>
+      </h2>
+      <p style="font-size: 14px; color: var(--text-sub);">
+        최고의 환상의 파트너 조합을 계산하는 중입니다!
+      </p>
+    `;
+
+    this.contentRoot.appendChild(container);
+  }
+
+  getWinnerType() {
+    let winner = 'idea';
+    let maxScore = -1;
+    for (const [type, score] of Object.entries(this.scores)) {
+      if (score > maxScore) {
+        maxScore = score;
+        winner = type;
+      }
+    }
+    return winner;
+  }
+
+  renderResultView() {
+    const winnerType = this.getWinnerType();
+    const resultCard = new ResultCard({
+      resultType: winnerType,
+      userName: this.userData.name,
+      onRestart: () => {
+        this.state = 'home';
+        this.render();
+      },
+      onShare: () => {
+        if (navigator.share) {
+          navigator.share({
+            title: `${this.userData.name} 님의 창업 성향 결과`,
+            text: `나의 창업 성향 결과를 확인해보세요!`,
+            url: window.location.href
+          }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(window.location.href);
+          alert('결과 링크가 클립보드에 복사되었습니다! 🎉');
+        }
+      }
+    }).render();
+
+    this.contentRoot.appendChild(resultCard);
+  }
+}
+
+// 앱 실행
+document.addEventListener('DOMContentLoaded', () => {
+  window.app = new App();
+});
