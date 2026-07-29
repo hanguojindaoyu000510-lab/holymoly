@@ -25,38 +25,51 @@ export class ResultScreen {
   shareKakaoTalk() {
     const kakaoKey = (window.ENV_CONFIG && window.ENV_CONFIG.KAKAO_JS_KEY) || '';
     if (!kakaoKey) {
-      alert('카카오 SDK 키가 설정되지 않았습니다. .env 파일을 확인해 주세요.');
+      alert('카카오 SDK 키가 설정되지 않았습니다. Vercel 환경변수(KAKAO_JS_KEY)를 확인해 주세요.');
       return;
     }
 
-    if (window.Kakao) {
-      if (!window.Kakao.isInitialized()) {
-        window.Kakao.init(kakaoKey);
-      }
+    const doShare = () => {
+      if (window.Kakao) {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init(kakaoKey);
+        }
 
-      window.Kakao.Share.sendDefault({
-        objectType: 'feed',
-        content: {
-          title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
-          description: this.typeData.summary,
-          imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
-          link: {
-            mobileWebUrl: window.location.href,
-            webUrl: window.location.href,
-          },
-        },
-        buttons: [
-          {
-            title: '나도 창업 성향 테스트하기 🚀',
+        window.Kakao.Share.sendDefault({
+          objectType: 'feed',
+          content: {
+            title: `${this.userName} 님의 창업 성향: ${this.typeData.title}`,
+            description: this.typeData.summary,
+            imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop',
             link: {
               mobileWebUrl: window.location.href,
               webUrl: window.location.href,
             },
           },
-        ],
-      });
+          buttons: [
+            {
+              title: '나도 창업 성향 테스트하기 🚀',
+              link: {
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href,
+              },
+            },
+          ],
+        });
+      } else {
+        alert('카카오 SDK 연결에 실패했습니다. 네트워크 상태를 확인해 주세요.');
+      }
+    };
+
+    if (window.Kakao) {
+      doShare();
     } else {
-      alert('카카오 SDK 로딩 중입니다. 잠시 후 다시 시도해 주세요.');
+      // Kakao SDK 동적 자동 로딩
+      const script = document.createElement('script');
+      script.src = 'https://developers.kakao.com/sdk/js/kakao.min.js';
+      script.onload = () => doShare();
+      script.onerror = () => alert('카카오 SDK 스크립트 로드 실패');
+      document.head.appendChild(script);
     }
   }
 
