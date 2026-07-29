@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎨 창업 성향 테스트 UI 컴포넌트 데모 쇼케이스</title>
+
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <style>
+    body {
+      background-color: #F1F5F9;
+      padding: 40px 20px;
+      align-items: flex-start;
+    }
+
+    .demo-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .demo-header {
+      background: white;
+      padding: 24px 30px;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+    }
+
+    .demo-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .demo-sub {
+      font-size: 15px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    .demo-section {
+      background: white;
+      border-radius: var(--radius-card);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--sky-main);
+      border-bottom: 2px solid var(--sky-light);
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-desc {
+      font-size: 13px;
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+
+    .component-preview {
+      background: var(--bg-app);
+      border-radius: var(--radius-btn);
+      padding: 20px;
+      border: 1px dashed var(--border-hover);
+    }
+
+    .flex-wrap-gap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .mobile-frame-simulator {
+      max-width: 440px;
+      margin: 0 auto;
+      background: white;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="demo-container">
+
+    <!-- 데모 타이틀 -->
+    <div class="demo-header">
+      <h1 class="demo-title">🎨 UI Component Storybook Showcase</h1>
+      <p class="demo-sub">
+        <strong>"Fresh Sky & Leaf Breeze"</strong> 디자인 시스템 기반 독립 모듈형 컴포넌트 실시간 데모 페이지입니다.
+      </p>
+    </div>
+
+    <!-- 1. Header Component -->
+    <section class="demo-section">
+      <div class="section-title">
+        <span>1. Header Component (헤더)</span>
+        <span class="section-desc">Header.js</span>
+      </div>
+      <div class="component-preview" style="padding: 0;">
+        <div id="header-demo-1"></div>
+        <div id="header-demo-2" style="border-top: 1px dashed var(--border-light);"></div>
+      </div>
+    </section>
+
+    <!-- 2. Badge Component -->
+    <section class="demo-section">
+      <div class="section-title">
+        <span>2. Badge Component (뱃지)</span>
+        <span class="section-desc">Badge.js</span>
+      </div>
+      <div class="component-preview">
+        <div id="badge-demo" class="flex-wrap-gap"></div>
+      </div>
+    </section>
+
+    <!-- 3. Button Component -->
+    <section class="demo-section">
+      <div class="section-title">
+        <span>3. Button Component (버튼)</span>
+        <span class="section-desc">Button.js</span>
+      </div>
+      <div class="component-preview">
+        <div id="button-demo" class="flex-wrap-gap"></div>
+      </div>
+    </section>
+
+    <!-- 4. ProgressBar Component -->
+    <section class="demo-section">
+      <div class="section-title">
+        <span>4. ProgressBar Component (진행바)</span>
+        <span class="section-desc">ProgressBar.js</span>
+      </div>
+      <div class="component-preview">
+        <div id="progress-demo" style="display: flex; flex-direction: column; gap: 16px;"></div>
+      </div>
+    </section>
+
+    <!-- 5. QuestionCard Component -->
+    <section class="demo-section">
+      <div class="section-title">
+        <span>5. QuestionCard Component (질문 & 선택지 카드)</span>
+        <span class="section-desc">QuestionCard.js</span>
+      </div>
+      <div class="mobile-frame-simulator" style="padding: 20px;">
+        <div id="question-demo"></div>
+      </div>
+    </section>
+
+    <!-- 6. ResultCard Component -->
+    <section class="demo-section">
+      <div class="section-title">
+        <span>6. ResultCard Component (성향 결과 & 파트너 카드)</span>
+        <span class="section-desc">ResultCard.js</span>
+      </div>
+      <div class="mobile-frame-simulator" style="padding: 20px;">
+        <div id="result-demo"></div>
+      </div>
+    </section>
+
+    <!-- 7. Modal Component -->
+    <section class="demo-section">
+      <div class="section-title">
+        <span>7. Modal Component (정보 수집 모달)</span>
+        <span class="section-desc">Modal.js</span>
+      </div>
+      <div class="component-preview text-center">
+        <div id="modal-trigger-btn"></div>
+      </div>
+    </section>
+
+    <!-- 모달 루트 -->
+    <div id="modal-root"></div>
+
+  </div>
+
+  <script type="module" src="js/demo.js"></script>
+</body>
+</html>
