@@ -20,16 +20,61 @@
 
 ---
 
-## 2. 사용자 여정 (User Journey) 및 화면 구성
+## 2. 화면 흐름 (Screen Flow) 및 사용자 인터랙션 상세
+
+### 2.1 전체 화면 흐름도 (Mermaid Flowchart)
 
 ```mermaid
-graph TD
-    A[1. 메인 랜딩 화면] -->|테스트 시작 클릭| B[2. 기본 정보 입력 선택]
-    B -->|이름/대학명 입력| C[3. 12문항 테스트 진행]
-    C -->|선택지 합산 계산| D[4. 성향 결과 화면]
-    D --> E[결과 이미지/링크 공유]
-    D --> F[환상의 파트너 유형 확인 & 팀 빌딩]
+flowchart TD
+    %% 노드 정의
+    Start([📱 웹 사이트 접속]) --> Screen1[1. 메인 랜딩 화면]
+    
+    Screen1 --> StepInfoInput{참가자 정보 입력}
+    StepInfoInput -->|이름/대학명 입력| SaveInfo[사용자 정보 저장]
+    StepInfoInput -->|익명 진행 선택| Anonymous[기본값 '익명' 처리]
+    
+    SaveInfo --> Screen2[2. 테스트 질문 화면 Q1~Q12]
+    Anonymous --> Screen2
+    
+    subgraph TestLoop [테스트 질문 진행 루프]
+        Screen2 --> SelectAnswer[선택지 클릭]
+        SelectAnswer --> AddScore[성향 가산점 합산]
+        AddScore --> CheckNext{마지막 질문인가?}
+        CheckNext -->|No Q1~Q11| NextQuestion[다음 질문 이동 & Progress Bar 증가]
+        NextQuestion --> Screen2
+        CheckNext -->|이전 버튼 클릭| PrevQuestion[이전 질문으로 복귀 & 점수 차감]
+        PrevQuestion --> Screen2
+    end
+
+    CheckNext -->|Yes Q12 완료| Screen3[3. 분석 및 결과 로딩 화면]
+    
+    Screen3 -->|2~3초 분석 애니메이션| Screen4[4. 최종 성향 결과 화면]
+
+    subgraph ResultActions [결과 화면 액션]
+        Screen4 --> Action1[📷 결과 카드 이미지 저장]
+        Screen4 --> Action2[🔗 결과 링크 복사 / SNS 공유]
+        Screen4 --> Action3[🤝 환상의 파트너 성향 확인]
+        Screen4 --> Action4[🔄 다시 테스트하기]
+    end
+
+    Action4 --> Screen1
+
+    subgraph AdminFlow [운영진 대시보드 경로]
+        AdminStart([⚙️ /admin 접속]) --> AdminLogin[운영진 암호 인증]
+        AdminLogin --> AdminDash[참가자 전체 성향 통계 & 엑셀 다운로드]
+    end
 ```
+
+### 2.2 화면별 상세 이행 조건 & UX 가이드
+
+| 화면 단계 | 화면명 | 입출력 데이터 | 화면 이행 조건 & 사용자 인터랙션 |
+| :--- | :--- | :--- | :--- |
+| **Step 1** | **메인 랜딩 화면** | 헤드카피, 시작 버튼, (선택) 이름/소속 폼 | - `[시작하기]` 버튼 클릭 시 정보 입력 모달 노출<br>- 이름/대학명 입력 후 `[테스트 시작]` 클릭 시 Step 2 이동 |
+| **Step 2** | **질문 화면 (Q1~Q12)** | 질문 텍스트, 2~4개 카드 선택지, 진행도 바 | - 선택지 클릭 시 **0.3초 스무스 애니메이션**과 함께 자동 다음 질문 이동<br>- 상단 진행바(Progress Bar) **8.3%씩 증가**<br>- `[← 이전]` 클릭 시 이전 답변 복귀 및 가산점 재계산 |
+| **Step 3** | **분석 로딩 화면** | 로딩 텍스트 & 스피너 애니메이션 | - Q12 답변 완료 시 자동 진입<br>- **2초간 성향 산출 로딩 애니메이션**을 통해 몰입감 제공 |
+| **Step 4** | **성향 결과 화면** | 결과 캐릭터, 강점/주의점, 파트너 유형, 공유 버튼 | - 6가지 성향 중 **최고 득점 유형** 렌더링<br>- `[결과 저장]`: 카드 이미지(PNG/JPG) 다운로드<br>- `[링크 공유]`: 카카오톡/URL 복사<br>- `[다시하기]`: State 초기화 후 메인 이동 |
+| **Step Admin** | **운영진 리포트** | 참가자 리스트, 성향 비율 그래프, CSV 다운로드 | - `/admin` URL 접근 시 암호 확인 후 통계 대시보드 렌더링 |
+
 
 ---
 
