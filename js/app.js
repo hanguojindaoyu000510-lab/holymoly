@@ -5,9 +5,8 @@
 
 import { questions } from './data/questions.js';
 import { Header } from './components/Header.js';
-import { Badge } from './components/Badge.js';
-import { Button } from './components/Button.js';
 import { ProgressBar } from './components/ProgressBar.js';
+import { StartScreen } from './components/StartScreen.js';
 import { QuestionCard } from './components/QuestionCard.js';
 import { ResultCard } from './components/ResultCard.js';
 import { Modal } from './components/Modal.js';
@@ -90,50 +89,12 @@ class App {
   }
 
   renderHomeView() {
-    const container = document.createElement('div');
-    container.className = 'animate-fade-in text-center';
-    container.style.display = 'flex';
-    container.style.flexDirection = 'column';
-    container.style.alignItems = 'center';
-    container.style.gap = '20px';
-    container.style.marginTop = '20px';
-
-    const badge = new Badge({ text: '✨ 2026 대학생 창업 캠프 전용', icon: '🌱', variant: 'leaf' }).render();
-
-    const avatar = document.createElement('div');
-    avatar.className = 'result-avatar-circle animate-cute-bounce';
-    avatar.style.width = '120px';
-    avatar.style.height = '120px';
-    avatar.style.fontSize = '64px';
-    avatar.style.margin = '10px 0';
-    avatar.innerHTML = '🚀';
-
-    const title = document.createElement('h1');
-    title.style.fontSize = '26px';
-    title.style.fontWeight = '800';
-    title.style.lineHeight = '1.35';
-    title.innerHTML = '나는 창업 팀에서<br><span style="color: var(--sky-main);">어떤 역할을 맡아야 할까?</span>';
-
-    const desc = document.createElement('p');
-    desc.style.fontSize = '15px';
-    desc.style.color = 'var(--text-sub)';
-    desc.style.lineHeight = '1.6';
-    desc.innerHTML = '약 3분 만에 확인하는 나의 창업가적 성향!<br>나와 가장 잘 맞는 <b>환상의 팀원 짝꿍</b>을 찾아보세요.';
-
-    const startBtn = new Button({
-      text: '나의 창업 성향 진단하기',
-      variant: 'primary',
-      icon: '✨',
-      onClick: () => this.modal.open()
+    // StartScreen 모듈 컴포넌트를 사용하여 시작 화면 렌더링
+    const startScreen = new StartScreen({
+      onStart: () => this.modal.open()
     }).render();
 
-    container.appendChild(badge);
-    container.appendChild(avatar);
-    container.appendChild(title);
-    container.appendChild(desc);
-    container.appendChild(startBtn);
-
-    this.contentRoot.appendChild(container);
+    this.contentRoot.appendChild(startScreen);
   }
 
   startTest() {
